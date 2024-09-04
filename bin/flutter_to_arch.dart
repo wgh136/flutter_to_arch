@@ -81,19 +81,40 @@ void main(List<String> arguments) async {
   File('arch/PKGBUILD').writeAsStringSync(pkgBuildContent);
   File("app.tar.gz").renameSync("arch/app.tar.gz");
   Directory.current = Directory('${Directory.current.path}/arch');
-  if (Platform.operatingSystemVersion.contains('arch')) {
+  if (isArchlinux()) {
     var result = Process.runSync('makepkg', ['-s']);
+    print(result.stdout);
+    print(result.stderr);
     if (result.exitCode != 0) {
-      print("makepkg finished with exit code ${result.exitCode}");
       exit(1);
     }
   } else {
     // use docker
-    File("Dockerfile").writeAsStringSync(flutter_to_arch.generateDockerFile());
-    Process.runSync("docker", ['build', '-t', 'archpkg-builder', '.']);
-    Process.runSync("docker", ['run', '--rm', '-v', '${Directory.current.absolute.path}:/build', 'archpkg-builder']);
+    File("Dockerfile").writeAsStringSync(flutter_to_arch.generateDockerFile(depends));
+    var result = Process.runSync("docker", ['build', '-t', 'archpkg-builder', '.']);
+    print(result.stdout);
+    print(result.stderr);
+    if (result.exitCode != 0) {
+      exit(1);
+    }
+    result = Process.runSync("docker", ['run', '--rm', '-v', '${Directory.current.absolute.path}:/build', 'archpkg-builder']);
+    print(result.stdout);
+    print(result.stderr);
+    if (result.exitCode != 0) {
+      exit(1);
+    }
   }
 
   print(
       "\x1b[32mbuild/linux/arch/$pkgName-$version-$buildNumber-x86_64.pkg.tar.zst\x1b[0m");
+}
+
+bool isArchlinux() {
+  try {
+    Process.runSync('pacman', []);
+    return true;
+  }
+  catch(e) {
+    return false;
+  }
 }
