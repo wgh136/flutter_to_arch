@@ -39,3 +39,19 @@ package() {
 }
 '''.trim();
 }
+
+String generateDockerFile() {
+  return '''
+FROM archlinux:latest
+
+RUN pacman -Syu --noconfirm base-devel
+
+WORKDIR /build
+
+COPY PKGBUILD ./
+
+COPY app.tar.gz ./
+
+RUN makepkg -si --noconfirm
+'''.trim();
+}

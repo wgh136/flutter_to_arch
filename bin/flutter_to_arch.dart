@@ -47,8 +47,9 @@ void main(List<String> arguments) async {
   }
   var version = (doc['version'] as String).split('+').first;
   var buildNumber = (doc['version'] as String).split('+')[1];
-  var depends =
-      (doc['flutter_to_arch']['depends'] as List?)?.map((e) => "'$e'").join(' ');
+  var depends = (doc['flutter_to_arch']['depends'] as List?)
+      ?.map((e) => "'$e'")
+      .join(' ');
   if (depends == null) {
     print("depends is required");
     exit(1);
@@ -69,11 +70,9 @@ void main(List<String> arguments) async {
   }
   Directory("app").createSync(recursive: true);
   copyPathSync("x64/release/bundle/", "app");
-  File("app/icon.png")
-      .writeAsBytesSync(File("../../$icon").readAsBytesSync());
+  File("app/icon.png").writeAsBytesSync(File("../../$icon").readAsBytesSync());
   File("app/app.desktop").writeAsStringSync(desktopFileContent);
-  Process.runSync(
-      'tar', ['-czvf', 'app.tar.gz', 'app']);
+  Process.runSync('tar', ['-czvf', 'app.tar.gz', 'app']);
   Directory("app").deleteSync(recursive: true);
   if (Directory('arch').existsSync()) {
     Directory('arch').deleteSync(recursive: true);
@@ -82,10 +81,19 @@ void main(List<String> arguments) async {
   File('arch/PKGBUILD').writeAsStringSync(pkgBuildContent);
   File("app.tar.gz").renameSync("arch/app.tar.gz");
   Directory.current = Directory('${Directory.current.path}/arch');
-  var result = Process.runSync('makepkg', ['-s']);
-  if(result.exitCode != 0) {
-    print("makepkg finished with exit code ${result.exitCode}");
-    exit(1);
+  if (Platform.operatingSystemVersion.contains('arch')) {
+    var result = Process.runSync('makepkg', ['-s']);
+    if (result.exitCode != 0) {
+      print("makepkg finished with exit code ${result.exitCode}");
+      exit(1);
+    }
+  } else {
+    // use docker
+    File("Dockerfile").writeAsStringSync(flutter_to_arch.generateDockerFile());
+    Process.runSync("docker", ['build', '-t', 'archpkg-builder', '.']);
+    Process.runSync("docker", ['run', '--rm', '-v', '${Directory.current.absolute.path}:/build', 'archpkg-builder']);
   }
-  print("\x1b[32mbuild/linux/arch/$pkgName-$version-$buildNumber-x86_64.pkg.tar.zst\x1b[0m");
+
+  print(
+      "\x1b[32mbuild/linux/arch/$pkgName-$version-$buildNumber-x86_64.pkg.tar.zst\x1b[0m");
 }
