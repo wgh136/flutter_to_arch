@@ -40,7 +40,7 @@ package() {
 '''.trim();
 }
 
-String generateDockerFile(String depends) {
+String generateDockerFile(String depends, String pkgName, String version, String buildNumber) {
   return '''
 FROM archlinux:latest
 
@@ -48,11 +48,9 @@ RUN pacman -Syu --noconfirm base-devel
 
 WORKDIR /build
 
-COPY PKGBUILD ./
+RUN ls
 
-COPY app.tar.gz ./
-
-RUN pacman -S $depends --noconfirm
+RUN pacman -Syu $depends --noconfirm
 
 RUN useradd -m user
 
@@ -60,6 +58,6 @@ RUN chown user:user /build
 
 USER user
 
-RUN makepkg -s --noconfirm
+CMD makepkg -s --noconfirm
 '''.trim();
 }

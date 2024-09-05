@@ -90,17 +90,18 @@ void main(List<String> arguments) async {
     }
   } else {
     // use docker
-    File("Dockerfile").writeAsStringSync(flutter_to_arch.generateDockerFile(depends));
+    File("Dockerfile").writeAsStringSync(flutter_to_arch.generateDockerFile(depends, pkgName, version, buildNumber));
     var result = Process.runSync("docker", ['build', '-t', 'archpkg-builder', '.']);
     print(result.stdout);
     print(result.stderr);
     if (result.exitCode != 0) {
       exit(1);
     }
-    result = Process.runSync("docker", ['run', '--rm', '-v', '${Directory.current.absolute.path}:/build', 'archpkg-builder']);
-    print(result.stdout);
-    print(result.stderr);
-    if (result.exitCode != 0) {
+    var p = await Process.start("docker", ['run', '--rm', '--mount', 'type=bind,source=${Directory.current.absolute.path},target=/build', 'archpkg-builder']);
+    p.stdout.listen((e) => stdout.add(e));
+    p.stderr.listen((e) => stderr.add(e));
+    var code = await p.exitCode;
+    if (code != 0) {
       exit(1);
     }
   }
