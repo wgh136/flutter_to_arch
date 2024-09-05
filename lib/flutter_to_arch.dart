@@ -46,18 +46,16 @@ FROM archlinux:latest
 
 RUN pacman -Syu --noconfirm base-devel
 
-WORKDIR /build
-
 RUN ls
 
-RUN pacman -Syu $depends --noconfirm
+RUN pacman -Syu $depends 'sudo' --noconfirm
 
 RUN useradd -m user
 
-RUN chown user /build
+RUN passwd -d user
 
-USER user
+WORKDIR /home/user
 
-CMD makepkg -s --noconfirm
+CMD cp -r /build/* /home/user/ && sudo -u user makepkg -s --noconfirm && rm -rf app.tar.gz && rm -rf PKGBUILD && cp -r ./* /build/
 '''.trim();
 }
