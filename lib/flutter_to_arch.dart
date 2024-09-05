@@ -54,7 +54,7 @@ RUN pacman -Syu $depends --noconfirm
 
 RUN useradd -m user
 
-RUN chown user:user /build
+RUN chown user /build
 
 USER user
 
