@@ -28,7 +28,7 @@ depends=($depends)
 
 package() {
     cd "\$srcdir"
-    install -Dm755 app/pica_comic "\$pkgdir/usr/bin/${pkgName}_pkg/pica_comic"
+    install -Dm755 app/${pkgName} "\$pkgdir/usr/bin/${pkgName}_pkg/${pkgName}"
     install -d "\$pkgdir/usr/bin/${pkgName}_pkg/lib"
     cp -r app/lib/* "\$pkgdir/usr/bin/${pkgName}_pkg/lib/"
     install -d "\$pkgdir/usr/bin/${pkgName}_pkg/data"
