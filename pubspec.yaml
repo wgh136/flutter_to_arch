@@ -1,15 +1,15 @@
 name: flutter_to_arch
-description: A sample command-line application.
+description: A command-line application to bundle your flutter app build into a archlinux package.
 version: 1.0.0
-# repository: https://github.com/my_org/my_repo
+repository: https://github.com/wgh136/flutter_to_arch
 
 environment:
   sdk: ^3.0.0
 
 # Add regular dependencies here.
 dependencies:
-  yaml:
-  io:
+  yaml: ^3.1.2
+  io: ^1.0.4
 
 dev_dependencies:
   lints: ^4.0.0
