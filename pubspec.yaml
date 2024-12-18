@@ -1,5 +1,5 @@
 name: flutter_to_arch
-description: A command-line application to bundle your flutter app build into a archlinux package.
+description: A CLI to bundle your flutter app build into a archlinux package.
 version: 1.0.0
 repository: https://github.com/wgh136/flutter_to_arch
 
