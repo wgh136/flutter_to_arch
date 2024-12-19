@@ -7,8 +7,7 @@ A command-line application to bundle your flutter app build into a archlinux pac
 - Add to `pubspec.yaml`
 ```yaml
 dev_dependencies:
-  flutter_to_arch:
-    git: https://github.com/wgh136/flutter_to_arch
+  flutter_to_arch: ^1.0.1
 ```
 
 - run `flutter pub get`

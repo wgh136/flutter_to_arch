@@ -1,7 +1,6 @@
 String generateDesktopFile(String version, String name, String pkgName, String description, String categories, String keywords) {
   return '''
 [Desktop Entry]
-Version=$version
 Name=$name
 GenericName=$name
 Comment=$description
